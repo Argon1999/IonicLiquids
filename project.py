@@ -186,15 +186,15 @@ def initialize(job):
             density = job.statepoint()['density']
             # Load in mol2 files as mb.Compound
             cation = mb.load(
-                wd+'/util/' + str(job.statepoint()['cation'])+'.mol2')
+                wd+'/util/mol2/' + str(job.statepoint()['cation'])+'.mol2')
             cation.name = job.statepoint()['cation']
             anion = mb.load(
-                wd + '/util/' + str(job.statepoint()['anion']) + '.mol2')
+                wd + '/util/mol2/' + str(job.statepoint()['anion']) + '.mol2')
             anion.name = job.statepoint()['anion']
 
-            an_ff = Forcefield(wd+'/util/'+job.statepoint()
+            an_ff = Forcefield(wd+'/util/ff/'+job.statepoint()
                                ['an_forcefield'] + '.xml')
-            cat_ff = Forcefield(wd+'/util/'+job.statepoint()
+            cat_ff = Forcefield(wd+'/util/ff/'+job.statepoint()
                                 ['cat_forcefield'] + '.xml')
 
             system = mb.fill_box(compound=[cation, anion],
