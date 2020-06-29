@@ -1,0 +1,11 @@
+{
+  "anion": "tsac",
+  "cation": "bmim",
+  "T": 303,
+  "n_anion": 500,
+  "n_cation": 500,
+  "cat_forcefield": "kpl",
+  "an_forcefield": "lopes_flour",
+  "density": null,
+  "charge_scale": 1.0
+}

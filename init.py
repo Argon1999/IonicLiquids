@@ -82,7 +82,7 @@ def main(args):
                     density = 1420
                     an_ffs = ['lopes_flour']
             for cat_ff in cat_ffs:
-                for an_ffs in an_ffs:
+                for an_ff in an_ffs:
                     for charge_scale in charge_scales:
                         statepoint = dict(
                             anion=anion,
@@ -90,9 +90,9 @@ def main(args):
                             T=303,
                             n_anion=500,
                             n_cation=500,
-                            cat_forcefield=cat_ff
-                            an_forcefield=an_ff
-                            density=density
+                            cat_forcefield=cat_ff,
+                            an_forcefield=an_ff,
+                            density=density,
                             charge_scale=charge_scale
                         )
                     project.open_job(statepoint).init()

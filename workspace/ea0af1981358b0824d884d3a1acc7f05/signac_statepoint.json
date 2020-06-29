@@ -1,0 +1,11 @@
+{
+  "anion": "nf",
+  "cation": "emim",
+  "T": 303,
+  "n_anion": 500,
+  "n_cation": 500,
+  "cat_forcefield": "lopes",
+  "an_forcefield": "lopes_flour",
+  "density": 1576,
+  "charge_scale": 1.0
+}
