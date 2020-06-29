@@ -9,38 +9,40 @@ def main(args):
     statepoints_init = []
 
     temperatures = [303]
+    cations = ['emim', 'bmim', 'hmim'] #We'll probably add more
     anions = ['tfsi','fsi','nf','tf','tsac','tfsam', 'beti']
-    charge_type = ['all_resp']
-    # concentrations : [acn, chloroform, LiTFSI]
-    #concentrations = [[1, 1, 0.3]]
-                   
-    for anion in anions:
-        if anion == 'tfsi':
-            density = 1517
-        elif anion == 'fsi':
-            density = 1455
-        elif anion == 'nf':
-            density = 1576
-        elif anion == 'tf':
-            density = 1387
-        elif anion == 'tsac':
-            density = 1481
-        elif anion == 'tfsam':
-            density = 1360
-        elif anion == 'beti':
-            density = 1570
+    forcefields = ['lopes_flour', 'lopes', 'kpl','ngkpl']
+    charge_scales = [1.0]
 
-        for charge in charge_type:
-            for temp in temperatures:
-                statepoint = dict(
-                            anion=anion,
-                            cation = 'emim',
-                            T= temp,
-                            n_anion = 500,
-                            n_cation = 500,
-                            charge_type= charge,
-                            den = density
-                            )
+    for anion in anions:
+        for cation in cations:
+             if anion == 'tfsi':
+                density = 1517
+            elif anion == 'fsi':
+                density = 1455
+            elif anion == 'nf':
+                density = 1576
+            elif anion == 'tf':
+                density = 1387
+            elif anion == 'tsac':
+                density = 1481
+            elif anion == 'tfsam':
+                density = 1360
+            elif anion == 'beti':
+                density = 1570
+
+
+            for ff in forcefields:
+                for charge_scale in charge_scales:
+                    statepoint = dict(
+                                anion=anion,
+                                cation =cation,
+                                T= 303,
+                                n_anion = 500,
+                                n_cation = 500,
+                                forcefield = ff
+                                density = density
+                                 )
                 project.open_job(statepoint).init()
                 statepoints_init.append(statepoint)
 
