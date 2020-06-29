@@ -163,6 +163,7 @@ def initialize(job):
     wd = os.getcwd()
     print(wd)
     with job:
+        if job.statepoint()['Density']:
         n_anion = job.statepoint()['n_anion']
         n_cation = job.statepoint()['n_cation']
         anion = job.statepoint()['anion']
