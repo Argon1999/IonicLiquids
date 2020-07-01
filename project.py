@@ -83,7 +83,7 @@ def _run_multiple(trj, mol):
     return D_bar, D_std
 
 
-init_file = 'gaff.gro'
+init_file = 'init.gro'
 em_file = 'em.gro'
 nvt_file = 'nvt.gro'
 npt_file = 'npt.gro'
@@ -177,7 +177,7 @@ from os import path
 def initialize(job):
     wd = os.getcwd()
     with job:
-        if job.statepoint()['density'] and not path.exists('init.top'):
+        if job.statepoint()['density']:
             n_anion = job.statepoint()['n_anion']
             n_cation = job.statepoint()['n_cation']
             anion = job.statepoint()['anion']
@@ -229,7 +229,7 @@ def initialize(job):
 @Project.post.isfile(em_file)
 @flow.cmd
 def em(job):
-    return _gromacs_str('em', 'init', 'init', job)
+     return _gromacs_str('em', 'init', 'init', job)
 
 
 @Project.operation
@@ -816,10 +816,9 @@ def run_cn(job):
                    np.transpose(np.vstack([r, N])),
                    header='# r (nm)\tCN(r)')
 
-
 def _gromacs_str(op_name, gro_name, sys_name, job):
     """Helper function, returns grompp command string for operation """
-    if op_name == 'em' and job.statepoint()['an_forcefield'] == 'lopes_fluor' and job.statepoint()['cat_forcefield'] == 'lopes':
+    if op_name == 'em' and job.statepoint()['an_forcefield'] == 'lopes_flour' and job.statepoint()['cat_forcefield'] == 'lopes':
         mdp = signac.get_project().fn('util/mdp_files/{}.mdp'.format(op_name))
         cmd = (
             'gmx_sp grompp -f {mdp} -c init.gro -p init.top -o em.tpr && srun -n 1 mdrun_mpi_sp -deffnm em')
@@ -827,7 +826,7 @@ def _gromacs_str(op_name, gro_name, sys_name, job):
         mdp = signac.get_project().fn(
             'src/util/mdp_files/{}-{}.mdp'.format(op_name, job.sp.T))
         cmd = (
-            'gmx grompp -f {mdp} -c {gro}.gro -p gaff.top -o {op}.tpr --maxwarn 1 && gmx mdrun -deffnm {op} -ntmpi 1')
+            'gmx_sp grompp -f {mdp} -c {gro}.gro -p init.top -o {op}.tpr && srun -n 1 mdrun_mpi_sp -deffnm {op}')
     return workspace_command(cmd.format(mdp=mdp, op=op_name, gro=gro_name, sys=sys_name))
 
 
