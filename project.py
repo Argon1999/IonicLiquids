@@ -170,15 +170,14 @@ def rdf_done(job):
 # @Project.label
 # def cn_done(job):
 #    return job.isfile(cn_file)
-
-
+import os.path
+from os import path
 @Project.operation
 @Project.post.isfile(init_file)
 def initialize(job):
     wd = os.getcwd()
-    print(wd)
     with job:
-        if job.statepoint()['Density']:
+        if job.statepoint()['density'] and not path.exists('init.top'):
             n_anion = job.statepoint()['n_anion']
             n_cation = job.statepoint()['n_cation']
             anion = job.statepoint()['anion']
@@ -192,10 +191,9 @@ def initialize(job):
                 wd + '/util/mol2/' + str(job.statepoint()['anion']) + '.mol2')
             anion.name = job.statepoint()['anion']
 
-            an_ff = Forcefield(wd+'/util/ff/'+job.statepoint()
-                               ['an_forcefield'] + '.xml')
-            cat_ff = Forcefield(wd+'/util/ff/'+job.statepoint()
-                                ['cat_forcefield'] + '.xml')
+            an_ff = Forcefield(wd+'/util/ff/'+ str(job.statepoint()['an_forcefield']) + '.xml')
+            cat_ff = Forcefield(wd+'/util/ff/'+str(job.statepoint()
+                                ['cat_forcefield']) + '.xml')
 
             system = mb.fill_box(compound=[cation, anion],
                                  n_compounds=[n_cation, n_anion],
@@ -209,9 +207,9 @@ def initialize(job):
                 elif child.name == job.statepoint()['anion']:
                     anion.add(mb.clone(child))
 
-            catPM = cat_ff.apply(cation, residues=[job.statepoint()['cation']])
+            catPM = cat_ff.apply(cation, residues=[job.statepoint()['cation']], assert_angle_params=False, assert_dihedral_params=False)
             anPM = an_ff.apply(
-                anion, residues=[job.statepoint()['anion']])
+                anion, residues=[job.statepoint()['anion']], assert_angle_params=False, assert_dihedral_params=False)
 
             scale = job.statepoint()['charge_scale']
             if scale != 1.0:
@@ -821,10 +819,10 @@ def run_cn(job):
 
 def _gromacs_str(op_name, gro_name, sys_name, job):
     """Helper function, returns grompp command string for operation """
-    if op_name == 'em':
-        mdp = signac.get_project().fn('src/util/mdp_files/{}.mdp'.format(op_name))
+    if op_name == 'em' and job.statepoint()['an_forcefield'] == 'lopes_fluor' and job.statepoint()['cat_forcefield'] == 'lopes':
+        mdp = signac.get_project().fn('util/mdp_files/{}.mdp'.format(op_name))
         cmd = (
-            'gmx grompp -f {mdp} -c gaff.gro -p gaff.top -o {op}.tpr --maxwarn 1 && gmx mdrun -deffnm {op} -ntmpi 1')
+            'gmx_sp grompp -f {mdp} -c init.gro -p init.top -o em.tpr && srun -n 1 mdrun_mpi_sp -deffnm em')
     else:
         mdp = signac.get_project().fn(
             'src/util/mdp_files/{}-{}.mdp'.format(op_name, job.sp.T))
